@@ -6,6 +6,7 @@ pub use {
     core::ops::{
         BitAnd as __OpsBitAnd, BitAndAssign as __OpsBitAndAssign, BitOr as __OpsBitOr,
         BitOrAssign as __OpsBitOrAssign, BitXor as __OpsBitXor, BitXorAssign as __OpsBitXorAssign,
+        Sub as __OpsSub, SubAssign as __OpsSubAssign,
     },
     num_traits::AsPrimitive as __NumTraitsAsPrimitive,
     paste::paste as __Paste,
@@ -235,6 +236,26 @@ mod tests {
         lhs ^= rhs;
 
         assert_eq!(lhs, ty(0b1000101));
+    }
+
+    #[test]
+    fn sub_assign_bitflags_with_flag() {
+        let mut lhs = ty(0b0010111);
+        let rhs = Ty::Null;
+
+        lhs -= rhs;
+
+        assert_eq!(lhs, ty(0b0010110));
+    }
+
+    #[test]
+    fn sub_assign_bitflags_with_bitflags() {
+        let mut lhs = ty(0b0010111);
+        let rhs = ty(0b1010010);
+
+        lhs -= rhs;
+
+        assert_eq!(lhs, ty(0b0000101));
     }
 
     #[test]

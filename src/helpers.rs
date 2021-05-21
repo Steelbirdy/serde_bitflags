@@ -77,6 +77,34 @@ macro_rules! __bitflags_impl {
             }
         }
 
+        impl $crate::__OpsSub<Self> for $enum_name {
+            type Output = Self;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                Self(self.0 & !rhs.0)
+            }
+        }
+
+        impl $crate::__OpsSub<$flag_name> for $enum_name {
+            type Output = Self;
+
+            fn sub(self, rhs: $flag_name) -> Self::Output {
+                Self(self.0 & !rhs.as_())
+            }
+        }
+
+        impl $crate::__OpsSubAssign<Self> for $enum_name {
+            fn sub_assign(&mut self, rhs: Self) {
+                self.0 &= !rhs.0;
+            }
+        }
+
+        impl $crate::__OpsSubAssign<$flag_name> for $enum_name {
+            fn sub_assign(&mut self, rhs: $flag_name) {
+                self.0 &= !rhs.as_();
+            }
+        }
+
         $crate::__binop_impl!(
             [
                 (__OpsBitAnd : bitand => &),

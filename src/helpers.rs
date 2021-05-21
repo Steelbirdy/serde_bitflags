@@ -2,16 +2,16 @@
 #[doc(hidden)]
 macro_rules! __bitflags {
     {
-        #[$repr_meta:meta]
+        #[repr($repr_name:ident)]
         $( #[$outer_meta:meta] )*
-        $( pub $( ($vis:vis) )? )? enum $enum_name:ident: $repr_name:ident {
+        $( pub $( ($vis:vis) )? )? enum $enum_name:ident {
             $(
                 $( #[$inner_meta:meta] )*
                 $variant:ident = $value:expr,
             )+
         } ($flag_name:ident)
     } => {
-        #[$repr_meta]
+        #[repr($repr_name)]
         $( #[$outer_meta] )*
         #[derive(Debug, Copy, Clone, PartialEq)]
         $(pub $( ($vis) )? )? enum $flag_name {

@@ -38,7 +38,7 @@ macro_rules! bitflags {
             $crate::__bitflags! {
                 #[repr($repr_name)]
                 $( #[$outer_meta] )*
-                $( pub $( ($vis) )? )? enum $enum_name: $repr_name {
+                $( pub $( ($vis) )? )? enum $enum_name {
                     $(
                         $( #[$inner_meta] )*
                         $variant = $value,

@@ -12,8 +12,18 @@ pub mod lib {
     pub use {From, Into, Vec};
 }
 
-pub trait BitFlags<Repr: 'static + PrimInt>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> {
-    type Flag: AsPrimitive<Repr>;
+macro_rules! repr_impl {
+    [$($ty:ty)+] => {
+        $(impl Repr for $ty {})+
+    };
+}
+
+pub trait Repr: 'static + PrimInt {}
+
+repr_impl![ u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize ];
+
+pub trait BitFlags<R: Repr>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> {
+    type Flag: AsPrimitive<R>;
 
     fn all() -> Self;
 

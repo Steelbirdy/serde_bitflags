@@ -46,10 +46,21 @@ macro_rules! __bitflags_impl {
             $(
                 pub const $variant: Self = Self($value);
             )+
+
+            const MAX: $repr_name = 0 $( + $value )+;
+            const MIN: $repr_name = 0;
         }
 
         impl $crate::BitFlags<$repr_name> for $enum_name {
             type Flag = $flag_name;
+
+            fn all() -> Self {
+                Self(Self::MAX)
+            }
+
+            fn none() -> Self {
+                Self(Self::MIN)
+            }
 
             fn contains(&self, flag: Self) -> bool {
                 self.0 & flag.0 != 0

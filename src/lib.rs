@@ -17,6 +17,10 @@ pub use {
 pub trait BitFlags<Repr: 'static + PrimInt>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> {
     type Flag: AsPrimitive<Repr>;
 
+    fn all() -> Self;
+
+    fn none() -> Self;
+
     fn contains(&self, flag: Self) -> bool;
 }
 

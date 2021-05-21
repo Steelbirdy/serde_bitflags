@@ -56,8 +56,8 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__CoreFrom<$crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag>> for $enum_name {
-            fn from(flags: $crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag>) -> Self {
+        impl $crate::__CoreFrom<$crate::__CoreVec<$flag_name> for $enum_name {
+            fn from(flags: $crate::__CoreVec<$flag_name>::Flag>) -> Self {
                 let value = flags
                     .into_iter()
                     .map(|f| f.as_())
@@ -68,7 +68,7 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__CoreFrom<$enum_name> for $crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag> {
+        impl $crate::__CoreFrom<$enum_name> for $crate::__CoreVec<$flag_name> {
             fn from(flags: $enum_name) -> Self {
                 vec![$($flag_name::$variant),+]
                     .into_iter()

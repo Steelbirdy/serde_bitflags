@@ -1,5 +1,5 @@
 [package]
-name = "serde_json_bitflags"
+name = "serde_bitflags"
 version = "0.1.0"
 authors = ["Steelbirdy <patrickammons@comcast.net>"]
 edition = "2018"

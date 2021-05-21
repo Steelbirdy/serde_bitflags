@@ -21,8 +21,8 @@ macro_rules! __bitflags {
             )+
         }
 
-        #[derive(Debug, Copy, Clone, PartialEq, $crate::__SerdeSerialize, $crate::__SerdeDeserialize)]
-        #[serde(from = "__CoreVec<<Self as __BitFlags<_>>::Flag>", into = "__CoreVec<<Self as __BitFlags<_>>::Flag>")]
+        #[derive(Debug, Copy, Clone, PartialEq, $crate::lib::Serialize, $crate::lib::Deserialize)]
+        #[serde(from = "__BFVec<<Self as __BFBitFlags<_>>::Flag>", into = "__BFVec<<Self as __BFBitFlags<_>>::Flag>")]
         $(pub $( ($vis) )? )? struct $enum_name($repr_name);
 
         $crate::__bitflags_impl!($enum_name, $repr_name, $flag_name; $($variant = $value),+);
@@ -33,7 +33,7 @@ macro_rules! __bitflags {
 #[doc(hidden)]
 macro_rules! __bitflags_impl {
     ($enum_name:ident, $repr_name:ident, $flag_name:ident; $($variant:ident = $value:expr),+) => {
-        impl $crate::__NumTraitsAsPrimitive<$repr_name> for $flag_name {
+        impl $crate::lib::AsPrimitive<$repr_name> for $flag_name {
             #[inline]
             fn as_(self) -> $repr_name {
                 self as $repr_name
@@ -67,8 +67,8 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__CoreFrom<$crate::__CoreVec<$flag_name>> for $enum_name {
-            fn from(flags: $crate::__CoreVec<$flag_name>) -> Self {
+        impl $crate::lib::From<$crate::lib::Vec<$flag_name>> for $enum_name {
+            fn from(flags: $crate::lib::Vec<$flag_name>) -> Self {
                 let value = flags
                     .into_iter()
                     .map(|f| f.as_())
@@ -79,7 +79,7 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__CoreFrom<$enum_name> for $crate::__CoreVec<$flag_name> {
+        impl $crate::lib::From<$enum_name> for $crate::lib::Vec<$flag_name> {
             fn from(flags: $enum_name) -> Self {
                 vec![$($flag_name::$variant),+]
                     .into_iter()
@@ -88,7 +88,7 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__OpsSub<Self> for $enum_name {
+        impl $crate::lib::Sub<Self> for $enum_name {
             type Output = Self;
 
             fn sub(self, rhs: Self) -> Self::Output {
@@ -96,7 +96,7 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__OpsSub<$flag_name> for $enum_name {
+        impl $crate::lib::Sub<$flag_name> for $enum_name {
             type Output = Self;
 
             fn sub(self, rhs: $flag_name) -> Self::Output {
@@ -104,13 +104,13 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__OpsSubAssign<Self> for $enum_name {
+        impl $crate::lib::SubAssign<Self> for $enum_name {
             fn sub_assign(&mut self, rhs: Self) {
                 self.0 &= !rhs.0;
             }
         }
 
-        impl $crate::__OpsSubAssign<$flag_name> for $enum_name {
+        impl $crate::lib::SubAssign<$flag_name> for $enum_name {
             fn sub_assign(&mut self, rhs: $flag_name) {
                 self.0 &= !rhs.as_();
             }
@@ -118,17 +118,17 @@ macro_rules! __bitflags_impl {
 
         $crate::__binop_impl!(
             [
-                (__OpsBitAnd : bitand => &),
-                (__OpsBitOr : bitor => |),
-                (__OpsBitXor : bitxor => ^),
+                (BitAnd : bitand => &),
+                (BitOr : bitor => |),
+                (BitXor : bitxor => ^),
             ] for $enum_name, $flag_name, $repr_name
         );
 
         $crate::__binop_assign_impl!(
             [
-                (__OpsBitAndAssign : bitand_assign => &=),
-                (__OpsBitOrAssign : bitor_assign => |=),
-                (__OpsBitXorAssign : bitxor_assign => ^=),
+                (BitAndAssign : bitand_assign => &=),
+                (BitOrAssign : bitor_assign => |=),
+                (BitXorAssign : bitxor_assign => ^=),
             ] for $enum_name, $flag_name, $repr_name
         );
     };
@@ -143,7 +143,7 @@ macro_rules! __binop_impl {
         )+
     };
     { ($trait_name:ident : $fn_name:ident => $op:tt) for $enum_name:ident, $flag_name:ident, $repr_name:ident } => {
-        impl $crate::$trait_name<Self> for $enum_name {
+        impl $crate::lib::$trait_name<Self> for $enum_name {
             type Output = Self;
 
             fn $fn_name(self, rhs: Self) -> Self {
@@ -151,7 +151,7 @@ macro_rules! __binop_impl {
             }
         }
 
-        impl $crate::$trait_name<$flag_name> for $enum_name {
+        impl $crate::lib::$trait_name<$flag_name> for $enum_name {
             type Output = Self;
 
             fn $fn_name(self, rhs: $flag_name) -> Self {
@@ -170,13 +170,13 @@ macro_rules! __binop_assign_impl {
         )+
     };
     { ($trait_name:ident : $fn_name:ident => $op:tt) for $enum_name:ident, $flag_name:ident, $repr_name:ident } => {
-        impl $crate::$trait_name<Self> for $enum_name {
+        impl $crate::lib::$trait_name<Self> for $enum_name {
             fn $fn_name(&mut self, rhs: Self) {
                 self.0 $op rhs.0;
             }
         }
 
-        impl $crate::$trait_name<$flag_name> for $enum_name {
+        impl $crate::lib::$trait_name<$flag_name> for $enum_name {
             fn $fn_name(&mut self, rhs: $flag_name) {
                 self.0 $op rhs.as_();
             }

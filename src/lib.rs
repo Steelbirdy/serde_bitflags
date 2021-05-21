@@ -2,17 +2,15 @@ mod helpers;
 
 use num_traits::{AsPrimitive, PrimInt};
 
-pub use {
-    core::ops::{
-        BitAnd as __OpsBitAnd, BitAndAssign as __OpsBitAndAssign, BitOr as __OpsBitOr,
-        BitOrAssign as __OpsBitOrAssign, BitXor as __OpsBitXor, BitXorAssign as __OpsBitXorAssign,
-        Sub as __OpsSub, SubAssign as __OpsSubAssign,
-    },
-    num_traits::AsPrimitive as __NumTraitsAsPrimitive,
-    paste::paste as __Paste,
-    serde::{Deserialize as __SerdeDeserialize, Serialize as __SerdeSerialize},
-    From as __CoreFrom, Into as __CoreInto, Vec as __CoreVec,
-};
+pub mod lib {
+    pub use core::ops::{
+        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Sub, SubAssign,
+    };
+    pub use num_traits::AsPrimitive;
+    pub use paste::paste;
+    pub use serde::{Deserialize, Serialize};
+    pub use {From, Into, Vec};
+}
 
 pub trait BitFlags<Repr: 'static + PrimInt>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> {
     type Flag: AsPrimitive<Repr>;
@@ -37,9 +35,10 @@ macro_rules! bitflags {
             )+
         }
     } => {
-        use $crate::{__CoreVec, __NumTraitsAsPrimitive, BitFlags as __BitFlags};
+        use $crate::BitFlags as __BFBitFlags;
+        use $crate::lib::{AsPrimitive as __BFAsPrimitive, Vec as __BFVec};
 
-        $crate::__Paste! {
+        $crate::lib::paste! {
             $crate::__bitflags! {
                 #[repr($repr_name)]
                 $( #[$outer_meta] )*

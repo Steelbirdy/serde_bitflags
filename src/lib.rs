@@ -31,7 +31,7 @@ pub trait BitFlags<R: Repr>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> {
 
     fn flags() -> &'static [Self];
 
-    fn contains(&self, flag: Self) -> bool;
+    fn contains(&self, flag: &Self) -> bool;
 }
 
 // TODO: Once inherent associated types are stable, use that instead of <name>Flag

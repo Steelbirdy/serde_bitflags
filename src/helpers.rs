@@ -68,7 +68,7 @@ macro_rules! __bitflags_impl {
                 Self::FLAGS
             }
 
-            fn contains(&self, flag: Self) -> bool {
+            fn contains(&self, flag: &Self) -> bool {
                 self.0 & flag.0 != 0
             }
         }

@@ -32,7 +32,7 @@ macro_rules! bitflags {
             )+
         }
     } => {
-        use $crate::{BitFlags, __NumTraitsAsPrimitive};
+        use $crate::{__CoreVec, __NumTraitsAsPrimitive, BitFlags as __BitFlags};
 
         $crate::__Paste! {
             $crate::__bitflags! {
@@ -54,6 +54,8 @@ mod tests {
     use super::bitflags;
 
     bitflags! {
+        #[derive(serde::Serialize, serde::Deserialize)]
+        #[serde(rename_all = "lowercase")]
         pub enum PrimitiveType: u8 {
             Null = 1,
             Boolean = 1 << 1,
@@ -249,5 +251,31 @@ mod tests {
         let flag_vec = Vec::from(flags);
 
         assert_eq!(flag_vec, vec![Flag::Null, Flag::Boolean, Flag::String]);
+    }
+
+    #[test]
+    fn serialize_bitflags_as_json_array() {
+        let input = ty(0b0101010);
+
+        let expected = r#"[
+  "boolean",
+  "array",
+  "string"
+]"#
+        .to_owned();
+
+        assert_eq!(serde_json::to_string_pretty(&input).unwrap(), expected);
+    }
+
+    #[test]
+    fn deserialize_json_array_as_bitflags() {
+        let input = r#"["boolean", "array", "string"]"#;
+
+        let expected = ty(0b0101010);
+
+        assert_eq!(
+            serde_json::from_str::<PrimitiveType>(input).unwrap(),
+            expected,
+        );
     }
 }

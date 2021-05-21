@@ -13,7 +13,7 @@ macro_rules! __bitflags {
     } => {
         #[$repr_meta]
         $( #[$outer_meta] )*
-        #[derive(Debug, Copy, Clone, PartialEq, $crate::__SerdeSerialize, $crate::__SerdeDeserialize)]
+        #[derive(Debug, Copy, Clone, PartialEq)]
         $(pub $( ($vis) )? )? enum $flag_name {
             $(
                 $( #[$inner_meta] )*
@@ -22,6 +22,7 @@ macro_rules! __bitflags {
         }
 
         #[derive(Debug, Copy, Clone, PartialEq, $crate::__SerdeSerialize, $crate::__SerdeDeserialize)]
+        #[serde(from = "__CoreVec<<Self as __BitFlags<_>>::Flag>", into = "__CoreVec<<Self as __BitFlags<_>>::Flag>")]
         $(pub $( ($vis) )? )? struct $enum_name($repr_name);
 
         $crate::__bitflags_impl!($enum_name, $repr_name, $flag_name; $($variant = $value),+);
@@ -33,6 +34,7 @@ macro_rules! __bitflags {
 macro_rules! __bitflags_impl {
     ($enum_name:ident, $repr_name:ident, $flag_name:ident; $($variant:ident = $value:expr),+) => {
         impl $crate::__NumTraitsAsPrimitive<$repr_name> for $flag_name {
+            #[inline]
             fn as_(self) -> $repr_name {
                 self as $repr_name
             }

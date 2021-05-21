@@ -56,8 +56,8 @@ macro_rules! __bitflags_impl {
             }
         }
 
-        impl $crate::__CoreFrom<$crate::__CoreVec<$flag_name> for $enum_name {
-            fn from(flags: $crate::__CoreVec<$flag_name>::Flag>) -> Self {
+        impl $crate::__CoreFrom<$crate::__CoreVec<$flag_name>> for $enum_name {
+            fn from(flags: $crate::__CoreVec<$flag_name>) -> Self {
                 let value = flags
                     .into_iter()
                     .map(|f| f.as_())
@@ -104,22 +104,6 @@ macro_rules! __binop_impl {
         )+
     };
     { ($trait_name:ident : $fn_name:ident => $op:tt) for $enum_name:ident, $flag_name:ident, $repr_name:ident } => {
-        impl $crate::$trait_name<Self> for $flag_name {
-            type Output = $enum_name;
-
-            fn $fn_name(self, rhs: Self) -> $enum_name {
-                $enum_name(self.as_() $op rhs.as_())
-            }
-        }
-
-        impl $crate::$trait_name<$enum_name> for $flag_name {
-            type Output = $enum_name;
-
-            fn $fn_name(self, rhs: $enum_name) -> $enum_name {
-                $enum_name(self.as_() $op rhs.0)
-            }
-        }
-
         impl $crate::$trait_name<Self> for $enum_name {
             type Output = Self;
 

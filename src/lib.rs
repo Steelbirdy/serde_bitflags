@@ -19,6 +19,8 @@ pub trait BitFlags<Repr: 'static + PrimInt>: From<Vec<Self::Flag>> + Into<Vec<Se
 
     fn none() -> Self;
 
+    fn flags() -> &'static [Self];
+
     fn contains(&self, flag: Self) -> bool;
 }
 

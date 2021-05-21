@@ -16,7 +16,7 @@ pub use {
 pub trait BitFlags<Repr: 'static + PrimInt>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> {
     type Flag: AsPrimitive<Repr>;
 
-    fn contains(&self, flag: Self::Flag) -> bool;
+    fn contains(&self, flag: Self) -> bool;
 }
 
 // TODO: Once inherent associated types are stable, use that instead of <name>Flag
@@ -43,7 +43,7 @@ macro_rules! bitflags {
                         $( #[$inner_meta] )*
                         $variant = $value,
                     )+
-                } ([< $enum_name Flag >])
+                } ([< __ $enum_name Flag >])
             }
         }
     };
@@ -70,6 +70,7 @@ mod tests {
     }
 
     type Ty = PrimitiveType;
+    type Flag = __PrimitiveTypeFlag;
 
     #[test]
     fn sanity() {
@@ -236,9 +237,9 @@ mod tests {
 
     #[test]
     fn bitflags_from_flag_vec() {
-        let flag_vec = vec![Ty::Null, Ty::Boolean, Ty::String];
+        let flag_vec = vec![Flag::Null, Flag::Boolean, Flag::String];
 
-        assert_eq!(Ty::from(flag_vec), ty(0b0100011),);
+        assert_eq!(Ty::from(flag_vec), ty(0b0100011));
     }
 
     #[test]
@@ -247,6 +248,6 @@ mod tests {
 
         let flag_vec = Vec::from(flags);
 
-        assert_eq!(flag_vec, vec![Ty::Null, Ty::Boolean, Ty::String],);
+        assert_eq!(flag_vec, vec![Flag::Null, Flag::Boolean, Flag::String]);
     }
 }

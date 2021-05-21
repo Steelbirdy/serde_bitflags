@@ -24,14 +24,14 @@ macro_rules! __bitflags {
         #[derive(Debug, Copy, Clone, PartialEq, $crate::__SerdeSerialize, $crate::__SerdeDeserialize)]
         $(pub $( ($vis) )? )? struct $enum_name($repr_name);
 
-        $crate::__bitflags_impl!($enum_name, $repr_name, $flag_name; $($variant),+);
+        $crate::__bitflags_impl!($enum_name, $repr_name, $flag_name; $($variant = $value),+);
     };
 }
 
 #[macro_export]
 #[doc(hidden)]
 macro_rules! __bitflags_impl {
-    ($enum_name:ident, $repr_name:ident, $flag_name:ident; $($variant:ident),+) => {
+    ($enum_name:ident, $repr_name:ident, $flag_name:ident; $($variant:ident = $value:expr),+) => {
         impl $crate::__NumTraitsAsPrimitive<$repr_name> for $flag_name {
             fn as_(self) -> $repr_name {
                 self as $repr_name
@@ -42,22 +42,27 @@ macro_rules! __bitflags_impl {
             #![allow(non_upper_case_globals)]
 
             $(
-                pub const $variant: $flag_name = $flag_name::$variant;
+                pub const $variant: Self = Self($value);
             )+
         }
 
         impl $crate::BitFlags<$repr_name> for $enum_name {
             type Flag = $flag_name;
 
-            fn contains(&self, flag: Self::Flag) -> bool {
-                self.0 & flag.as_() != 0
+            fn contains(&self, flag: Self) -> bool {
+                self.0 & flag.0 != 0
             }
         }
 
         impl $crate::__CoreFrom<$crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag>> for $enum_name {
             fn from(flags: $crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag>) -> Self {
-                flags.into_iter()
-                    .fold(Self(0), |a, b| a|b)
+                let value = flags
+                    .into_iter()
+                    .map(|f| f.as_())
+                    .reduce(|a, b| a|b)
+                    .unwrap_or(0);
+
+                Self(value)
             }
         }
 
@@ -65,7 +70,7 @@ macro_rules! __bitflags_impl {
             fn from(flags: $enum_name) -> Self {
                 vec![$($flag_name::$variant),+]
                     .into_iter()
-                    .filter(|&f| flags.contains(f))
+                    .filter(|&f| flags.0 & f.as_() != 0)
                     .collect()
             }
         }

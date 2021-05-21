@@ -54,6 +54,22 @@ macro_rules! __bitflags_impl {
             }
         }
 
+        impl $crate::__CoreFrom<$crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag>> for $enum_name {
+            fn from(flags: $crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag>) -> Self {
+                flags.into_iter()
+                    .fold(Self(0), |a, b| a|b)
+            }
+        }
+
+        impl $crate::__CoreFrom<$enum_name> for $crate::__CoreVec<<$enum_name as $crate::BitFlags<$repr_name>>::Flag> {
+            fn from(flags: $enum_name) -> Self {
+                vec![$($flag_name::$variant),+]
+                    .into_iter()
+                    .filter(|&f| flags.contains(f))
+                    .collect()
+            }
+        }
+
         $crate::__binop_impl!(
             [
                 (__OpsBitAnd : bitand => &),

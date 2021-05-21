@@ -10,9 +10,10 @@ pub use {
     num_traits::AsPrimitive as __NumTraitsAsPrimitive,
     paste::paste as __Paste,
     serde::{Deserialize as __SerdeDeserialize, Serialize as __SerdeSerialize},
+    From as __CoreFrom, Into as __CoreInto, Vec as __CoreVec,
 };
 
-pub trait BitFlags<Repr: 'static + PrimInt> {
+pub trait BitFlags<Repr: 'static + PrimInt>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> {
     type Flag: AsPrimitive<Repr>;
 
     fn contains(&self, flag: Self::Flag) -> bool;
@@ -31,7 +32,7 @@ macro_rules! bitflags {
             )+
         }
     } => {
-        use $crate::__NumTraitsAsPrimitive;
+        use $crate::{BitFlags, __NumTraitsAsPrimitive};
 
         $crate::__Paste! {
             $crate::__bitflags! {
@@ -231,5 +232,21 @@ mod tests {
         lhs ^= rhs;
 
         assert_eq!(lhs, ty(0b1000101));
+    }
+
+    #[test]
+    fn bitflags_from_flag_vec() {
+        let flag_vec = vec![Ty::Null, Ty::Boolean, Ty::String];
+
+        assert_eq!(Ty::from(flag_vec), ty(0b0100011),);
+    }
+
+    #[test]
+    fn bitflags_into_flag_vec() {
+        let flags = ty(0b0100011);
+
+        let flag_vec = Vec::from(flags);
+
+        assert_eq!(flag_vec, vec![Ty::Null, Ty::Boolean, Ty::String],);
     }
 }

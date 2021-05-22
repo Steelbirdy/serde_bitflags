@@ -23,7 +23,7 @@ pub trait Repr: 'static + PrimInt {}
 
 repr_impl![ u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize ];
 
-pub trait BitFlags<R: Repr>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> + Hash {
+pub trait BitFlags<R: Repr>: From<Vec<Self::Flag>> + Into<Vec<Self::Flag>> + Hash + Eq {
     type Flag: AsPrimitive<R>;
 
     fn all() -> Self;

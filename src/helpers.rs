@@ -21,7 +21,7 @@ macro_rules! __bitflags {
             )+
         }
 
-        #[derive(Debug, Copy, Clone, PartialEq, Hash, $crate::lib::Serialize, $crate::lib::Deserialize)]
+        #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, $crate::lib::Serialize, $crate::lib::Deserialize)]
         #[serde(from = "__BFVec<<Self as __BFBitFlags<_>>::Flag>", into = "__BFVec<<Self as __BFBitFlags<_>>::Flag>")]
         $(pub $( ($vis) )? )? struct $enum_name($repr_name);
 
